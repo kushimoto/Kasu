@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<services>
+	<service>
+		<name>Yahoo</name>
+		<url>https://www.yahoo.co.jp</url>
+		<account>hoge</account>
+		<password>uhaha</password>
+	</service>
+	<service>
+		<name>Google</name>
+		<url>https://www.google.com</url>
+		<account>hoge</account>
+		<password>wahaha</password>
+	</service>
+	<service>
+		<name>Nextcloud</name>
+		<url>https://cloud.kusshie.com</url>
+		<account>kushimoto@kusshie.com</account>
+		<password>unko</password>
+	</service>
+</services>
