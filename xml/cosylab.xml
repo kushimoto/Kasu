@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<services>
+	<service>
+		<name>Yahoo</name>
+		<url>https://www.yahoo.co.jp</url>
+		<account>cosylab@oit.ac.jp</account>
+		<password>uhahawahaha1605</password>
+	</service>
+	<service>
+		<name>Google</name>
+		<url>https://www.google.com</url>
+		<account>cosylab@oit.ac.jp</account>
+		<password>wahahauhaha1605</password>
+	</service>
+	<service>
+		<name>Nextcloud</name>
+		<url>https://cloud.kusshie.com</url>
+		<account>cosylab@kusshie.com</account>
+		<password>unkounkounko</password>
+	</service>
+	<service>
+		<name>Amazon</name>
+		<url>https://www.amazon.co.jp</url>
+		<account>cosylab@oit.ac.jp</account>
+		<password>uhyohyowhuhu</password>
+	</service>
+	<service>
+		<name>Vpass</name>
+		<url>https://www.smbc-card.com</url>
+		<account>cosylab</account>
+		<password>24kaibaraihasaikyou!</password>
+	</service>
+</services>
