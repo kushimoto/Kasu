@@ -2,3 +2,10 @@
 	margin-top: 5px;
 	margin-left: 5px;
 }
+
+.password-box {
+	display: inline-block;
+	margin-bottom: 0px !important;
+	max-width: 200px;
+	border-bottom: none !important;
+}

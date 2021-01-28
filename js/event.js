@@ -41,4 +41,53 @@ $(function() {
 				
 	});
 
+	$("#edit").on('click', '#select_line', function() {
+
+		selectLine();
+
+	});
+
+	$("#table_xml").on('click', 'i', function() {
+
+		togglePwMask("large", $(this).attr('id'));
+
+	});
+
+	$("#table_xml").on('click', 'input', function() {
+
+		if (window.innerWidth <= 992)
+			togglePwMask("small", $(this).attr('id'));
+
+	});
+
+	$("#edit").on('click', '#dicision', function() {
+
+		/* 入力フォームからファイル名を取得 */
+		let fileName = $("input[id='open_xml_name']").val();
+
+		replaceLine();
+		printTable(fileName, true);
+
+	});
+
+	$("#edit").on('click', '#insert_line', function() {
+
+		/* 入力フォームからファイル名を取得 */
+		let fileName = $("input[id='open_xml_name']").val();
+
+		insertLine();
+		printTable(fileName, true);
+
+	});
+
+	$("#edit").on('click', '#delete_line', function() {
+
+		/* 入力フォームからファイル名を取得 */
+		let fileName = $("input[id='open_xml_name']").val();
+
+		removeLine();
+		printTable(fileName, true);
+
+	});
+
 });
