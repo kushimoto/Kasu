@@ -20,6 +20,16 @@ $(function() {
 		printTable(fileName);
 
 	});
+
+	/* ファイル開く */
+	$("#open_xml").on('click', '#open_xml_btn', function() {
+
+		/* 入力フォームからファイル名を取得 */
+		let fileName = $("input[id='open_xml_name']").val();
+
+		printTable(fileName);
+
+	});
 	
 	/* 編集モード切替スイッチ使用時の処理 */
 	$("#edit_mode").click(function() {
