@@ -30,12 +30,14 @@ function printTable(fn, reload = false) {
 		url: ("./xml/" + fn),
 		dataType: "xml"
 	}).done(function(xml) {
-		/* クローンを作成 */
-		xmlClone = xml;
+		/* メインクローンを作成 */
+		xmlCloneMain = xml.cloneNode(true);
+		/* 表示用クローンを作成 */
+		xmlClone = xml.cloneNode(true);
 		/* XMLをHTMLに変換して出力 */
 		convertXMLtoHTML(xml, fn);
 	}).fail(function() {
-		alert("XMLファイルの取得に失敗しました");
+		swal("エラー", "XMLファイルの取得に失敗しました", "error");
 	});
 	
 }
@@ -69,6 +71,13 @@ function convertXMLtoHTML(x, fn) {
 	$("#table_name").append("<h6>ファイル名：" + fn + "</h6>");
 
 }
+
+function syncXML(x) {
+
+	xmlClone = x.cloneNode(true);
+
+}
+	
 
 /* 拡張機能群出力コントローラー */
 function printExpFuncsCtl(m) {
@@ -152,11 +161,12 @@ function printExpFuncs(f) {
 		$("#" + f).append(html);
 		M.updateTextFields();
 	}).fail(function() {
-		alert("HTMLファイルの取得に失敗しました");
+		swal("エラー", "HTMLファイルの取得に失敗しました", "error");
 	});
 		
 }
 
+/* パスワード可視切替関数 */
 function togglePwMask(type, str) {
 
 	let target = '#' + str;
@@ -182,9 +192,9 @@ function selectLine() {
 	let line = null;
 	try {
 		/* 行そのもの */
-		line = $(xmlClone).find("service:nth-child(" + lineNum + ")");
+		line = $(xmlCloneMain).find("service:nth-child(" + lineNum + ")");
 	} catch(e) {
-		alert("編集対象の行を選んで下さい！");
+		swal("エラー", "編集対象の行を選んで下さい！", "error");
 		console.log(e);
 		return ;
 	}
@@ -199,8 +209,10 @@ function selectLine() {
 	$("#edit_password").val(password);
 	$("#edit_file_name").val($("input[id='open_xml_name']").val());
 
+	syncXML(xmlCloneMain);
 }
 
+/* 行挿入関数 */
 function insertLine() {
 
 	/* 追加行ベース */
@@ -216,27 +228,33 @@ function insertLine() {
 	);
 
 	try {
-		$(xmlClone).find("service:nth-child(" + lineNum + ")").after(addLine);
+		$(xmlCloneMain).find("service:nth-child(" + lineNum + ")").after(addLine);
 	} catch (e) {
-		alert("挿入箇所を選んで下さい！");
+		swal("エラー", "挿入箇所を選んで下さい！", "error");
 		console.log(e);
 	}
+
+	syncXML(xmlCloneMain);
 }
 
+/* 行削除関数 */
 function removeLine() {
 
 	/* 行番号 */
 	let lineNum = Number($("input[name=check]:checked").val()) + 1;
 	try {
 		/* 行そのもの削除 */
-		$(xmlClone).find("service:nth-child(" + lineNum + ")").remove();
+		$(xmlCloneMain).find("service:nth-child(" + lineNum + ")").remove();
 	} catch(e) {
-		alert("削除する行を選んで下さい");
+		swal("エラー", "削除する行を選んで下さい", "error");
 		console.log(e);
 	}
 
+	syncXML(xmlCloneMain);
+
 }
 
+/* 行編集関数 */
 function replaceLine() {
 
 	/* 行番号 */
@@ -244,9 +262,9 @@ function replaceLine() {
 	let line = null;
 	try {
 		/* 行そのもの */
-		line = $(xmlClone).find("service:nth-child(" + lineNum + ")");
+		line = $(xmlCloneMain).find("service:nth-child(" + lineNum + ")");
 	} catch(e) {
-		alert("編集対象の行を選んで下さい！");
+		swal("エラー", "編集対象の行を選んで下さい！", "error");
 		console.log(e);
 		return ;
 	}
@@ -255,5 +273,171 @@ function replaceLine() {
 	line.find("url").replaceWith($("<url></url>").text($("#edit_url").val()));
 	line.find("account").replaceWith($("<account></account>").text($("#edit_account").val()));
 	line.find("password").replaceWith($("<password></password>").text($("#edit_password").val()));
+
+	syncXML(xmlCloneMain);
+}
+
+/* ソートスイッチコントローラー関数 */
+function sortSwitchCtl() {
+
+	/* それぞれのスイッチの状態 真偽値 */
+	let nameAsc = $("#name_asc:checked").val();
+	let nameDesc = $("#name_desc:checked").val();
+	let accountAsc = $("#account_asc:checked").val();
+	let accountDesc = $("#account_desc:checked").val();
+	/* 項目ごとのソート使用状況 真偽値 */
+	let name = ( (nameAsc == undefined) && (nameDesc == undefined) );
+	let account = ( (accountAsc == undefined) && (accountDesc == undefined) );
+
+	/* スイッチの無効化 解除 */
+	if (name) {
+		$("#name_asc").prop('disabled', false);
+		$("#name_desc").prop('disabled', false);
+	}
+	if (account) {
+		$("#account_asc").prop('disabled', false);
+		$("#account_desc").prop('disabled', false);
+	}
+
+	/* サービス名でソート */
+	if (nameAsc || nameDesc) {
+		if (nameAsc) { /* 昇順 */
+			/* 降順無効化 */
+			$("#name_desc").prop('disabled', true);
+			sortTable("name", "asc");
+		} else if (nameDesc) { /* 降順 */
+			/* 昇順無効化 */
+			$("#name_asc").prop('disabled', true);
+			sortTable("name", "desc");
+		}
+	}
+	/* アカウント名でソート */
+	if (accountAsc || accountDesc) {
+		if (accountAsc) { /* 昇順 */
+			/* 降順無効化 */
+			$("#account_desc").prop('disabled', true);
+			sortTable("account", "asc");
+		} else if (accountDesc) { /* 降順 */
+			/* 昇順無効化 */
+			$("#account_asc").prop('disabled', true);
+			sortTable("account", "desc");
+		}
+	}
+
+	/* 両方の項目でソートが無効化された場合にテーブルを初期化 */
+	if (name && account) {
+		syncXML(xmlCloneMain);
+	}
+
+}
+
+/* ソート関数 */
+function sortTable(col, mode){
+
+	let services = $(xmlClone).find("services");
+	let service = $(services).children();
+	let pwbook = new Array();
+
+	/* 連想配列の作成 */
+	for(let i = 0; i < service.length; i++) {
+		pwbook[i] = {idx: i, key: $(service[i]).find(col).text()};
+	}
+
+	/* 連想配列をソート */
+	pwbook.sort(function(a, b) {
+		if (mode == "asc") { /* 昇順 */
+			if( a.key <= b.key )
+				return -1;
+			else
+				return 1;
+		} else if (mode == "desc") { /* 降順 */
+			if( a.key <= b.key )
+				return 1;
+			else
+				return -1;
+		}
+	});
+
+	// 表の要素の並べ替え
+	$(services).empty();
+	for(let i = 0; i < service.length; i++){
+		$(services).append(service[pwbook[i].idx]);
+	}
+}
+
+/* 検索関数 */
+function searchLine(type, s1, s2) {
+
+	/* 出力用 */
+	let services = $(xmlClone).find("services");
+	/* 一致行格納用 */
+	let service = null;
+	/* 空にする */
+	$(services).empty();
+
+	/* serviceタグを全件探索 */
+	$(xmlCloneMain).find("service").each(function() {
+		if (s2 == undefined) {
+			/* 要素を全件探索 */
+			$(this).find(type).each(function() {
+				/* 部分一致 */
+				if ($(this).text().indexOf(s1) > -1) {
+					/* 一致したため変数に追加 */
+					service = $(this).parent().clone();
+					$(services).append(service);
+				}
+			});
+		} else {
+			/* nameタグを全件探索 */
+			$(this).find("name").each(function() {
+				/* name と account の両方が部分一致 */
+				if ( ($(this).text().indexOf(s1) > -1) && ($(this).parent().find("account").text().indexOf(s2) > -1) ) {
+					/* 一致したため変数に追加 */
+					service = $(this).parent().clone();
+					$(services).append(service);
+				}
+			});
+		}
+
+	});
+}
+
+function uploadXML(fn) {
+
+	let serializer = new XMLSerializer();
+	let xml_serialize = serializer.serializeToString(xmlCloneMain);
+
+	$.ajax({
+		type: 'POST',
+		url: './upload.php',
+		cache: false,
+		datatype: 'json',
+		data: {
+			'file_name': fn,
+			'file': xml_serialize
+		}
+	}).done(function(respons) {
+		swal("成功", respons, "success");
+	}).fail(function() {
+		swal("エラー", "ファイルのアップロードに失敗しました", "error");
+	});
+
+}
+
+function addXML(fn) {
+
+	$.ajax({
+		type: 'POST',
+		url: './addxml.php',
+		cache: false,
+		datatype: 'json',
+		data: {
+			'file_name': fn,
+		}
+	}).done(function(respons) {
+		swal("成功", respons, "success");
+	}).fail(function() {
+		swal("エラー", "ファイルの新規作成に失敗しました", "error");
+	});
 
 }
